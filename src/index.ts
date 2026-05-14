@@ -19,7 +19,7 @@ export type {
   UpdateConfig,
   ViewConfig,
   TransactionConfig,
-} from './types'
+} from './types.js'
 
-export { mergeModelConfig } from './mergeModelConfig'
-export { resolveModelConfig, buildListConfig, buildDetailConfig, buildFormConfig, evaluateFieldDependencies } from './runtime'
+export { mergeModelConfig } from './mergeModelConfig.js'
+export { resolveModelConfig, buildListConfig, buildDetailConfig, buildFormConfig, evaluateFieldDependencies } from './runtime.js'

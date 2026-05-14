@@ -1,4 +1,4 @@
-import type { DeepPartial, ModelConfig } from './types'
+import type { DeepPartial, ModelConfig } from './types.js'
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (value === null || typeof value !== 'object') return false

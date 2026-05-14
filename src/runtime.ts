@@ -1,4 +1,4 @@
-import { mergeModelConfig } from './mergeModelConfig'
+import { mergeModelConfig } from './mergeModelConfig.js'
 import type {
   CreateConfig,
   DeepPartial,
@@ -10,7 +10,7 @@ import type {
   ModelFormField,
   PlatformKey,
   UpdateConfig,
-} from './types'
+} from './types.js'
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (value === null || typeof value !== 'object') return false
@@ -241,4 +241,3 @@ export function evaluateFieldDependencies(formData: Record<string, any>, inputCo
 
   return result
 }
-
