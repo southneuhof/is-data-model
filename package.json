@@ -1,7 +1,7 @@
 {
   "name": "@southneuhof/is-data-model",
   "private": false,
-  "version": "0.0.2",
+  "version": "1.0.1",
   "type": "module",
   "description": "Shared model metadata types and runtime config builders for South Neuhof information systems.",
   "repository": {
