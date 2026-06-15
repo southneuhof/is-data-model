@@ -11,6 +11,7 @@ export type PlatformKey = 'web' | 'mobile'
 export type KnownFieldType =
   | 'text'
   | 'textarea'
+  | 'color'
   | 'password'
   | 'number'
   | 'currency'
