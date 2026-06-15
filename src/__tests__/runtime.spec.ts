@@ -40,6 +40,26 @@ describe('model-meta runtime helpers', () => {
     expect(resolved.transaction?.inputConfig?.status?.type).toBe('radio')
   })
 
+  it('preserves bind definitions through config merging', () => {
+    const resolved = resolveModelConfig(baseModel, {
+      transaction: {
+        inputConfig: {
+          name: {
+            bind: {
+              uploadState: 'nameUploadState',
+              previewOpen: 'namePreviewOpen',
+            },
+          },
+        },
+      },
+    })
+
+    expect(resolved.transaction?.inputConfig?.name?.bind).toEqual({
+      uploadState: 'nameUploadState',
+      previewOpen: 'namePreviewOpen',
+    })
+  })
+
   it('builds list/detail/form configs deterministically', () => {
     expect(buildListConfig(baseModel).fields).toEqual(['name', 'status'])
     expect(buildDetailConfig(baseModel).fields).toEqual(['name', 'status'])

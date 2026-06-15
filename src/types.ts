@@ -78,6 +78,7 @@ export type ModelFormField = {
   rendererKey?: string
   /** @deprecated Prefer rendererKey and platform renderer registries. */
   component?: unknown
+  bind?: Record<string, string>
   span?: number
   colSpan?: number
   rowSpan?: number
