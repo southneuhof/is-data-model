@@ -1,6 +1,5 @@
 {
   "name": "@southneuhof/is-data-model",
-  "private": false,
   "version": "1.0.9",
   "type": "module",
   "description": "Shared model metadata types and runtime config builders for South Neuhof information systems.",
@@ -8,33 +7,12 @@
     "type": "git",
     "url": "git+https://github.com/southneuhof/is-data-model.git"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src",
-    "!dist/**/*.tsbuildinfo",
-    "!src/**/__tests__/**",
-    "!src/**/*.spec.*",
-    "!src/**/*.test.*",
-    "README.md"
-  ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "pnpm clean && pnpm build:js && pnpm clean:build-info",
-    "clean": "node ../../scripts/clean-package.mjs dist",
-    "clean:build-info": "node ../../scripts/clean-package.mjs dist/tsconfig.build.tsbuildinfo",
-    "build:js": "tsc -p tsconfig.build.json",
-    "type-check": "tsc --noEmit -p tsconfig.build.json",
+    "build": "pnpm run type-check",
+    "type-check": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run --environment jsdom"
   },
   "dependencies": {
