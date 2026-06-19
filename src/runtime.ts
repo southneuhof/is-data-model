@@ -106,10 +106,7 @@ export function buildListConfig(modelConfig: ModelConfig, defaults: Partial<List
     getAPI: pickFirst(list?.getAPI, view?.getAPI, modelConfig.modelAPI, modelConfig.name, defaults.getAPI),
     deleteAPI: pickFirst(list?.deleteAPI, defaults.deleteAPI),
     fields: pickFirst(list?.fields, view?.fields, modelConfig.fields, defaults.fields, []),
-    fieldsAlias: {
-      ...(defaults.fieldsAlias || {}),
-      ...(list?.fieldsAlias || view?.fieldsAlias || modelConfig.fieldsAlias || {}),
-    },
+    fieldsAlias: mergeRecordValues(defaults.fieldsAlias, modelConfig.fieldsAlias, view?.fieldsAlias, list?.fieldsAlias),
     fieldsDictionary: mergeRecordValues(defaults.fieldsDictionary, view?.fieldsDictionary, list?.fieldsDictionary),
     fieldsParse: mergeRecordValues(defaults.fieldsParse, view?.fieldsParse, list?.fieldsParse),
     fieldsProxy: mergeRecordValues(defaults.fieldsProxy, view?.fieldsProxy, list?.fieldsProxy),
@@ -124,10 +121,7 @@ export function buildListConfig(modelConfig: ModelConfig, defaults: Partial<List
     searchParameters: mergeRecordValues(defaults.searchParameters, view?.searchParameters, list?.searchParameters),
     filter: {
       fields: pickFirst(list?.filter?.fields, defaults.filter?.fields),
-      fieldsAlias: {
-        ...(defaults.filter?.fieldsAlias || {}),
-        ...(list?.filter?.fieldsAlias || {}),
-      },
+      fieldsAlias: mergeRecordValues(defaults.filter?.fieldsAlias, list?.filter?.fieldsAlias),
       inputConfig: mergeRecordValues(defaults.filter?.inputConfig, list?.filter?.inputConfig),
     },
     export: {
@@ -153,10 +147,7 @@ export function buildDetailConfig(modelConfig: ModelConfig, defaults: Partial<De
     getAPI: pickFirst(detail?.getAPI, view?.getAPI, modelConfig.modelAPI, modelConfig.name, defaults.getAPI),
     dataID: pickFirst(detail?.dataID, defaults.dataID),
     fields: pickFirst(detail?.fields, view?.fields, modelConfig.fields, defaults.fields, []),
-    fieldsAlias: {
-      ...(defaults.fieldsAlias || {}),
-      ...(detail?.fieldsAlias || view?.fieldsAlias || modelConfig.fieldsAlias || {}),
-    },
+    fieldsAlias: mergeRecordValues(defaults.fieldsAlias, modelConfig.fieldsAlias, view?.fieldsAlias, detail?.fieldsAlias),
     fieldsDictionary: mergeRecordValues(defaults.fieldsDictionary, view?.fieldsDictionary, detail?.fieldsDictionary),
     fieldsParse: mergeRecordValues(defaults.fieldsParse, view?.fieldsParse, detail?.fieldsParse),
     fieldsProxy: mergeRecordValues(defaults.fieldsProxy, view?.fieldsProxy, detail?.fieldsProxy),
@@ -189,10 +180,7 @@ export function buildFormConfig(modelConfig: ModelConfig, mode: 'create' | 'upda
     getAPI: mode === 'update' ? pickFirst((scoped as UpdateConfig | undefined)?.getAPI, modelConfig.modelAPI, modelConfig.name, defaults.getAPI) : undefined,
     dataID: mode === 'update' ? pickFirst((scoped as UpdateConfig | undefined)?.dataID, defaults.dataID) : undefined,
     searchParameters: mode === 'update' ? pickFirst((scoped as UpdateConfig | undefined)?.searchParameters, defaults.searchParameters) : undefined,
-    fieldsAlias: {
-      ...(defaults.fieldsAlias || {}),
-      ...(scoped?.fieldsAlias || fallback?.fieldsAlias || transaction?.fieldsAlias || modelConfig.fieldsAlias || {}),
-    },
+    fieldsAlias: mergeRecordValues(defaults.fieldsAlias, modelConfig.fieldsAlias, transaction?.fieldsAlias, fallback?.fieldsAlias, scoped?.fieldsAlias),
     inputConfig: mergeRecordValues(defaults.inputConfig, transaction?.inputConfig, fallback?.inputConfig, scoped?.inputConfig),
     extraData: mergeRecordValues(defaults.extraData, transaction?.extraData, fallback?.extraData, scoped?.extraData),
     getInitialData: pickFirst(scoped?.getInitialData, fallback?.getInitialData, transaction?.getInitialData, defaults.getInitialData),

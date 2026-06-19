@@ -127,7 +127,14 @@ describe('model-meta runtime helpers', () => {
       name: 'jobs',
       title: 'Jobs',
       fields: ['name', 'active'],
+      fieldsAlias: {
+        name: 'Model Name',
+        active: 'Model Status',
+      },
       view: {
+        fieldsAlias: {
+          name: 'View Name',
+        },
         fieldsParse: {
           active: 'boolean-label',
         },
@@ -135,6 +142,9 @@ describe('model-meta runtime helpers', () => {
           page: 1,
         },
         list: {
+          fieldsAlias: {
+            active: 'List Status',
+          },
           fieldsAlign: {
             active: 'center',
           },
@@ -142,6 +152,9 @@ describe('model-meta runtime helpers', () => {
             sort: 'asc',
           },
           filter: {
+            fieldsAlias: {
+              active: 'Filter Status',
+            },
             inputConfig: {
               status: {
                 type: 'radio',
@@ -175,6 +188,9 @@ describe('model-meta runtime helpers', () => {
     }
 
     const listConfig = buildListConfig(model, {
+      fieldsAlias: {
+        created_at: 'Created At',
+      },
       fieldsParse: {
         created_at: 'datetime',
       },
@@ -185,6 +201,9 @@ describe('model-meta runtime helpers', () => {
         limit: 10,
       },
       filter: {
+        fieldsAlias: {
+          name: 'Filter Name',
+        },
         inputConfig: {
           active: {
             type: 'radio',
@@ -199,6 +218,11 @@ describe('model-meta runtime helpers', () => {
     expect(listConfig.fieldsParse).toEqual({
       created_at: 'datetime',
       active: 'boolean-label',
+    })
+    expect(listConfig.fieldsAlias).toEqual({
+      created_at: 'Created At',
+      name: 'View Name',
+      active: 'List Status',
     })
     expect(listConfig.fieldsAlign).toEqual({
       name: 'start',
@@ -223,8 +247,27 @@ describe('model-meta runtime helpers', () => {
         },
       },
     })
+    expect(listConfig.filter?.fieldsAlias).toEqual({
+      name: 'Filter Name',
+      active: 'Filter Status',
+    })
+
+    const detailConfig = buildDetailConfig(model, {
+      fieldsAlias: {
+        created_at: 'Created At',
+      },
+    })
+
+    expect(detailConfig.fieldsAlias).toEqual({
+      created_at: 'Created At',
+      name: 'View Name',
+      active: 'Model Status',
+    })
 
     const formConfig = buildFormConfig(model, 'create', {
+      fieldsAlias: {
+        created_at: 'Created At',
+      },
       inputConfig: {
         name: {
           type: 'text',
@@ -259,6 +302,11 @@ describe('model-meta runtime helpers', () => {
           required: false,
         },
       },
+    })
+    expect(formConfig.fieldsAlias).toEqual({
+      created_at: 'Created At',
+      name: 'Model Name',
+      active: 'Model Status',
     })
   })
 
