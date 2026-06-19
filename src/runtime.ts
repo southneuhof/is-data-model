@@ -63,6 +63,17 @@ function pickFirst<T>(...values: Array<T | undefined>): T | undefined {
   return values.find((item) => item !== undefined)
 }
 
+function mergeRecordValues<T extends Record<string, unknown>>(...values: Array<T | undefined>): T | undefined {
+  let result: T | undefined
+
+  for (const value of values) {
+    if (value === undefined) continue
+    result = mergeValue(result ?? {}, value) as T
+  }
+
+  return result
+}
+
 export function resolveModelConfig<T extends ModelConfig>(base: T, override?: DeepPartial<T>, platform?: PlatformKey): T {
   const merged = mergeModelConfig(base, override)
   if (!platform) return merged as T
@@ -99,39 +110,36 @@ export function buildListConfig(modelConfig: ModelConfig, defaults: Partial<List
       ...(defaults.fieldsAlias || {}),
       ...(list?.fieldsAlias || view?.fieldsAlias || modelConfig.fieldsAlias || {}),
     },
-    fieldsDictionary: pickFirst(list?.fieldsDictionary, view?.fieldsDictionary, defaults.fieldsDictionary),
-    fieldsParse: pickFirst(list?.fieldsParse, view?.fieldsParse, defaults.fieldsParse),
-    fieldsProxy: pickFirst(list?.fieldsProxy, view?.fieldsProxy, defaults.fieldsProxy),
-    fieldsType: pickFirst(list?.fieldsType, view?.fieldsType, defaults.fieldsType),
-    fieldsUnit: pickFirst(list?.fieldsUnit, view?.fieldsUnit, defaults.fieldsUnit),
-    fieldsClass: pickFirst(list?.fieldsClass, defaults.fieldsClass),
-    fieldsHeaderClass: pickFirst(list?.fieldsHeaderClass, defaults.fieldsHeaderClass),
-    fieldsAlign: pickFirst(list?.fieldsAlign, defaults.fieldsAlign),
+    fieldsDictionary: mergeRecordValues(defaults.fieldsDictionary, view?.fieldsDictionary, list?.fieldsDictionary),
+    fieldsParse: mergeRecordValues(defaults.fieldsParse, view?.fieldsParse, list?.fieldsParse),
+    fieldsProxy: mergeRecordValues(defaults.fieldsProxy, view?.fieldsProxy, list?.fieldsProxy),
+    fieldsType: mergeRecordValues(defaults.fieldsType, view?.fieldsType, list?.fieldsType),
+    fieldsUnit: mergeRecordValues(defaults.fieldsUnit, view?.fieldsUnit, list?.fieldsUnit),
+    fieldsClass: mergeRecordValues(defaults.fieldsClass, list?.fieldsClass),
+    fieldsHeaderClass: mergeRecordValues(defaults.fieldsHeaderClass, list?.fieldsHeaderClass),
+    fieldsAlign: mergeRecordValues(defaults.fieldsAlign, list?.fieldsAlign),
     toggleableFields: pickFirst(list?.toggleableFields, defaults.toggleableFields),
     draggable: pickFirst(list?.draggable, defaults.draggable),
     onDragChange: pickFirst(list?.onDragChange, defaults.onDragChange),
-    searchParameters: pickFirst(list?.searchParameters, view?.searchParameters, defaults.searchParameters),
+    searchParameters: mergeRecordValues(defaults.searchParameters, view?.searchParameters, list?.searchParameters),
     filter: {
       fields: pickFirst(list?.filter?.fields, defaults.filter?.fields),
       fieldsAlias: {
         ...(defaults.filter?.fieldsAlias || {}),
         ...(list?.filter?.fieldsAlias || {}),
       },
-      inputConfig: {
-        ...(defaults.filter?.inputConfig || {}),
-        ...(list?.filter?.inputConfig || {}),
-      },
+      inputConfig: mergeRecordValues(defaults.filter?.inputConfig, list?.filter?.inputConfig),
     },
     export: {
       ...(defaults.export || {}),
       allow: pickFirst(list?.export?.allow, defaults.export?.allow, true),
       exportAPI: pickFirst(list?.export?.exportAPI, list?.getAPI, view?.getAPI, modelConfig.modelAPI, modelConfig.name, defaults.export?.exportAPI),
       onExport: pickFirst(list?.export?.onExport, defaults.export?.onExport),
-      fieldsDictionary: pickFirst(list?.export?.fieldsDictionary, list?.fieldsDictionary, view?.fieldsDictionary, defaults.export?.fieldsDictionary),
-      fieldsParse: pickFirst(list?.export?.fieldsParse, list?.fieldsParse, view?.fieldsParse, defaults.export?.fieldsParse),
-      fieldsProxy: pickFirst(list?.export?.fieldsProxy, list?.fieldsProxy, view?.fieldsProxy, defaults.export?.fieldsProxy),
-      fieldsType: pickFirst(list?.export?.fieldsType, list?.fieldsType, view?.fieldsType, defaults.export?.fieldsType),
-      fieldsUnit: pickFirst(list?.export?.fieldsUnit, list?.fieldsUnit, view?.fieldsUnit, defaults.export?.fieldsUnit),
+      fieldsDictionary: mergeRecordValues(defaults.export?.fieldsDictionary, view?.fieldsDictionary, list?.fieldsDictionary, list?.export?.fieldsDictionary),
+      fieldsParse: mergeRecordValues(defaults.export?.fieldsParse, view?.fieldsParse, list?.fieldsParse, list?.export?.fieldsParse),
+      fieldsProxy: mergeRecordValues(defaults.export?.fieldsProxy, view?.fieldsProxy, list?.fieldsProxy, list?.export?.fieldsProxy),
+      fieldsType: mergeRecordValues(defaults.export?.fieldsType, view?.fieldsType, list?.fieldsType, list?.export?.fieldsType),
+      fieldsUnit: mergeRecordValues(defaults.export?.fieldsUnit, view?.fieldsUnit, list?.fieldsUnit, list?.export?.fieldsUnit),
     },
   }
 }
@@ -149,22 +157,22 @@ export function buildDetailConfig(modelConfig: ModelConfig, defaults: Partial<De
       ...(defaults.fieldsAlias || {}),
       ...(detail?.fieldsAlias || view?.fieldsAlias || modelConfig.fieldsAlias || {}),
     },
-    fieldsDictionary: pickFirst(detail?.fieldsDictionary, view?.fieldsDictionary, defaults.fieldsDictionary),
-    fieldsParse: pickFirst(detail?.fieldsParse, view?.fieldsParse, defaults.fieldsParse),
-    fieldsProxy: pickFirst(detail?.fieldsProxy, view?.fieldsProxy, defaults.fieldsProxy),
-    fieldsType: pickFirst(detail?.fieldsType, view?.fieldsType, defaults.fieldsType),
-    fieldsUnit: pickFirst(detail?.fieldsUnit, view?.fieldsUnit, defaults.fieldsUnit),
-    searchParameters: pickFirst(detail?.searchParameters, view?.searchParameters, defaults.searchParameters),
+    fieldsDictionary: mergeRecordValues(defaults.fieldsDictionary, view?.fieldsDictionary, detail?.fieldsDictionary),
+    fieldsParse: mergeRecordValues(defaults.fieldsParse, view?.fieldsParse, detail?.fieldsParse),
+    fieldsProxy: mergeRecordValues(defaults.fieldsProxy, view?.fieldsProxy, detail?.fieldsProxy),
+    fieldsType: mergeRecordValues(defaults.fieldsType, view?.fieldsType, detail?.fieldsType),
+    fieldsUnit: mergeRecordValues(defaults.fieldsUnit, view?.fieldsUnit, detail?.fieldsUnit),
+    searchParameters: mergeRecordValues(defaults.searchParameters, view?.searchParameters, detail?.searchParameters),
     export: {
       ...(defaults.export || {}),
       allow: pickFirst(detail?.export?.allow, defaults.export?.allow),
       title: pickFirst(detail?.export?.title, defaults.export?.title),
       onExport: pickFirst(detail?.export?.onExport, defaults.export?.onExport),
-      fieldsDictionary: pickFirst(detail?.export?.fieldsDictionary, detail?.fieldsDictionary, view?.fieldsDictionary, defaults.export?.fieldsDictionary),
-      fieldsParse: pickFirst(detail?.export?.fieldsParse, detail?.fieldsParse, view?.fieldsParse, defaults.export?.fieldsParse),
-      fieldsProxy: pickFirst(detail?.export?.fieldsProxy, detail?.fieldsProxy, view?.fieldsProxy, defaults.export?.fieldsProxy),
-      fieldsType: pickFirst(detail?.export?.fieldsType, detail?.fieldsType, view?.fieldsType, defaults.export?.fieldsType),
-      fieldsUnit: pickFirst(detail?.export?.fieldsUnit, detail?.fieldsUnit, view?.fieldsUnit, defaults.export?.fieldsUnit),
+      fieldsDictionary: mergeRecordValues(defaults.export?.fieldsDictionary, view?.fieldsDictionary, detail?.fieldsDictionary, detail?.export?.fieldsDictionary),
+      fieldsParse: mergeRecordValues(defaults.export?.fieldsParse, view?.fieldsParse, detail?.fieldsParse, detail?.export?.fieldsParse),
+      fieldsProxy: mergeRecordValues(defaults.export?.fieldsProxy, view?.fieldsProxy, detail?.fieldsProxy, detail?.export?.fieldsProxy),
+      fieldsType: mergeRecordValues(defaults.export?.fieldsType, view?.fieldsType, detail?.fieldsType, detail?.export?.fieldsType),
+      fieldsUnit: mergeRecordValues(defaults.export?.fieldsUnit, view?.fieldsUnit, detail?.fieldsUnit, detail?.export?.fieldsUnit),
     },
   }
 }
@@ -185,8 +193,8 @@ export function buildFormConfig(modelConfig: ModelConfig, mode: 'create' | 'upda
       ...(defaults.fieldsAlias || {}),
       ...(scoped?.fieldsAlias || fallback?.fieldsAlias || transaction?.fieldsAlias || modelConfig.fieldsAlias || {}),
     },
-    inputConfig: pickFirst(scoped?.inputConfig, fallback?.inputConfig, transaction?.inputConfig, defaults.inputConfig),
-    extraData: pickFirst(scoped?.extraData, fallback?.extraData, transaction?.extraData, defaults.extraData),
+    inputConfig: mergeRecordValues(defaults.inputConfig, transaction?.inputConfig, fallback?.inputConfig, scoped?.inputConfig),
+    extraData: mergeRecordValues(defaults.extraData, transaction?.extraData, fallback?.extraData, scoped?.extraData),
     getInitialData: pickFirst(scoped?.getInitialData, fallback?.getInitialData, transaction?.getInitialData, defaults.getInitialData),
     onSuccess: pickFirst(scoped?.onSuccess, fallback?.onSuccess, transaction?.onSuccess, defaults.onSuccess),
   }

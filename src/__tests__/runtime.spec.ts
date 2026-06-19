@@ -66,6 +66,202 @@ describe('model-meta runtime helpers', () => {
     expect(buildFormConfig(baseModel, 'create').fields).toEqual(['name', 'status'])
   })
 
+  it('merges fieldsType with defaults instead of replacing them', () => {
+    const model: ModelConfig = {
+      name: 'jobs',
+      fields: ['name', 'active'],
+      view: {
+        fieldsType: {
+          name: { type: 'html' },
+        },
+      },
+    }
+
+    const defaults = {
+      fieldsType: {
+        active: {
+          type: 'chip',
+          props: {
+            options: {
+              true: { label: 'Active' },
+            },
+          },
+        },
+      },
+      export: {
+        fieldsType: {
+          active: {
+            type: 'chip',
+          },
+        },
+      },
+    }
+
+    expect(buildListConfig(model, defaults).fieldsType).toEqual({
+      active: {
+        type: 'chip',
+        props: {
+          options: {
+            true: { label: 'Active' },
+          },
+        },
+      },
+      name: { type: 'html' },
+    })
+
+    expect(buildDetailConfig(model, defaults).fieldsType).toEqual({
+      active: {
+        type: 'chip',
+        props: {
+          options: {
+            true: { label: 'Active' },
+          },
+        },
+      },
+      name: { type: 'html' },
+    })
+  })
+
+  it('extends other object configs from defaults across list/detail/form builders', () => {
+    const model: ModelConfig = {
+      name: 'jobs',
+      title: 'Jobs',
+      fields: ['name', 'active'],
+      view: {
+        fieldsParse: {
+          active: 'boolean-label',
+        },
+        searchParameters: {
+          page: 1,
+        },
+        list: {
+          fieldsAlign: {
+            active: 'center',
+          },
+          searchParameters: {
+            sort: 'asc',
+          },
+          filter: {
+            inputConfig: {
+              status: {
+                type: 'radio',
+                props: {
+                  data: [{ id: 'active', name: 'Active' }],
+                },
+              },
+            },
+          },
+        },
+      },
+      transaction: {
+        inputConfig: {
+          active: {
+            props: {
+              required: false,
+            },
+          },
+        },
+        create: {
+          inputConfig: {
+            name: {
+              props: {
+                required: false,
+                placeholder: 'Job title',
+              },
+            },
+          },
+        },
+      },
+    }
+
+    const listConfig = buildListConfig(model, {
+      fieldsParse: {
+        created_at: 'datetime',
+      },
+      fieldsAlign: {
+        name: 'start',
+      },
+      searchParameters: {
+        limit: 10,
+      },
+      filter: {
+        inputConfig: {
+          active: {
+            type: 'radio',
+            props: {
+              data: [{ id: true, name: 'Yes' }],
+            },
+          },
+        },
+      },
+    })
+
+    expect(listConfig.fieldsParse).toEqual({
+      created_at: 'datetime',
+      active: 'boolean-label',
+    })
+    expect(listConfig.fieldsAlign).toEqual({
+      name: 'start',
+      active: 'center',
+    })
+    expect(listConfig.searchParameters).toEqual({
+      limit: 10,
+      page: 1,
+      sort: 'asc',
+    })
+    expect(listConfig.filter?.inputConfig).toEqual({
+      active: {
+        type: 'radio',
+        props: {
+          data: [{ id: true, name: 'Yes' }],
+        },
+      },
+      status: {
+        type: 'radio',
+        props: {
+          data: [{ id: 'active', name: 'Active' }],
+        },
+      },
+    })
+
+    const formConfig = buildFormConfig(model, 'create', {
+      inputConfig: {
+        name: {
+          type: 'text',
+          props: {
+            required: true,
+          },
+        },
+        active: {
+          type: 'radio',
+          props: {
+            defaultValue: true,
+          },
+        },
+      },
+      extraData: {
+        source: 'defaults',
+      },
+    })
+
+    expect(formConfig.inputConfig).toEqual({
+      name: {
+        type: 'text',
+        props: {
+          required: false,
+          placeholder: 'Job title',
+        },
+      },
+      active: {
+        type: 'radio',
+        props: {
+          defaultValue: true,
+          required: false,
+        },
+      },
+    })
+  })
+
   it('evaluates dependencies without framework context', () => {
     const deps = evaluateFieldDependencies(
       { login_method: 'sso' },
