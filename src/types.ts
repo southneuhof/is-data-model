@@ -27,6 +27,7 @@ export type KnownFieldType =
   | 'checkbox-group'
   | 'switch'
   | 'image'
+  | 'media'
   | 'file'
   | 'tag'
   | 'location'
