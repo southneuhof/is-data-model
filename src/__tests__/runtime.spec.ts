@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildDetailConfig, buildFormConfig, buildListConfig, evaluateFieldDependencies, resolveModelConfig, type ModelConfig } from '../index'
+import { buildDetailConfig, buildFormConfig, buildListConfig, evaluateFieldDependencies, mergeInputConfig, resolveModelConfig, type ModelConfig } from '../index'
 
 describe('model-meta runtime helpers', () => {
   const baseModel: ModelConfig = {
@@ -60,6 +60,43 @@ describe('model-meta runtime helpers', () => {
     })
   })
 
+  it('replaces inputConfig field declarations when override supplies type', () => {
+    expect(mergeInputConfig(
+      { title: { type: 'text', props: { required: true } } },
+      { title: { type: 'text' } }
+    )?.title).toEqual({ type: 'text' })
+
+    const resolved = resolveModelConfig(baseModel, {
+      transaction: {
+        inputConfig: {
+          name: { type: 'text' },
+        },
+      },
+    })
+
+    expect(resolved.transaction?.inputConfig?.name).toEqual({ type: 'text' })
+
+    const formConfig = buildFormConfig(
+      {
+        name: 'pages',
+        title: 'Pages',
+        transaction: {
+          inputConfig: {
+            title: { type: 'text' },
+          },
+        },
+      },
+      'create',
+      {
+        inputConfig: {
+          title: { type: 'text', props: { required: true } },
+        },
+      }
+    )
+
+    expect(formConfig.inputConfig?.title).toEqual({ type: 'text' })
+  })
+
   it('builds list/detail/form configs deterministically', () => {
     expect(buildListConfig(baseModel).fields).toEqual(['name', 'status'])
     expect(buildDetailConfig(baseModel).fields).toEqual(['name', 'status'])
@@ -69,6 +106,7 @@ describe('model-meta runtime helpers', () => {
   it('merges fieldsType with defaults instead of replacing them', () => {
     const model: ModelConfig = {
       name: 'jobs',
+      title: 'Jobs',
       fields: ['name', 'active'],
       view: {
         fieldsType: {
@@ -172,7 +210,7 @@ describe('model-meta runtime helpers', () => {
             props: {
               required: false,
             },
-          },
+          } as any,
         },
         create: {
           inputConfig: {
@@ -181,7 +219,7 @@ describe('model-meta runtime helpers', () => {
                 required: false,
                 placeholder: 'Job title',
               },
-            },
+            } as any,
           },
         },
       },

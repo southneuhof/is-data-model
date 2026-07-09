@@ -21,5 +21,5 @@ export type {
   TransactionConfig,
 } from './types.js'
 
-export { mergeModelConfig } from './mergeModelConfig.js'
+export { mergeInputConfig, mergeModelConfig } from './mergeModelConfig.js'
 export { resolveModelConfig, buildListConfig, buildDetailConfig, buildFormConfig, evaluateFieldDependencies } from './runtime.js'

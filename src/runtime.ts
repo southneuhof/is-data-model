@@ -1,4 +1,4 @@
-import { mergeModelConfig } from './mergeModelConfig.js'
+import { mergeInputConfig, mergeModelConfig } from './mergeModelConfig.js'
 import type {
   CreateConfig,
   DeepPartial,
@@ -122,7 +122,7 @@ export function buildListConfig(modelConfig: ModelConfig, defaults: Partial<List
     filter: {
       fields: pickFirst(list?.filter?.fields, defaults.filter?.fields),
       fieldsAlias: mergeRecordValues(defaults.filter?.fieldsAlias, list?.filter?.fieldsAlias),
-      inputConfig: mergeRecordValues(defaults.filter?.inputConfig, list?.filter?.inputConfig),
+      inputConfig: mergeInputConfig(defaults.filter?.inputConfig, list?.filter?.inputConfig),
     },
     export: {
       ...(defaults.export || {}),
@@ -181,7 +181,7 @@ export function buildFormConfig(modelConfig: ModelConfig, mode: 'create' | 'upda
     dataID: mode === 'update' ? pickFirst((scoped as UpdateConfig | undefined)?.dataID, defaults.dataID) : undefined,
     searchParameters: mode === 'update' ? pickFirst((scoped as UpdateConfig | undefined)?.searchParameters, defaults.searchParameters) : undefined,
     fieldsAlias: mergeRecordValues(defaults.fieldsAlias, modelConfig.fieldsAlias, transaction?.fieldsAlias, fallback?.fieldsAlias, scoped?.fieldsAlias),
-    inputConfig: mergeRecordValues(defaults.inputConfig, transaction?.inputConfig, fallback?.inputConfig, scoped?.inputConfig),
+    inputConfig: mergeInputConfig(defaults.inputConfig, transaction?.inputConfig, fallback?.inputConfig, scoped?.inputConfig),
     extraData: mergeRecordValues(defaults.extraData, transaction?.extraData, fallback?.extraData, scoped?.extraData),
     getInitialData: pickFirst(scoped?.getInitialData, fallback?.getInitialData, transaction?.getInitialData, defaults.getInitialData),
     onSuccess: pickFirst(scoped?.onSuccess, fallback?.onSuccess, transaction?.onSuccess, defaults.onSuccess),
